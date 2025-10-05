@@ -1,0 +1,21 @@
+# Core ML + Diffusion
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+diffusers>=0.24.0
+transformers>=4.35.0
+accelerate>=0.24.0
+safetensors>=0.3.2
+
+# ControlNet and Image Processing
+opencv-contrib-python>=4.8.0.76
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# Backend / API
+fastapi>=0.105.0
+uvicorn>=0.25.0
+python-multipart>=0.0.7
+
+# Performance (optional)
+xformers>=0.0.22

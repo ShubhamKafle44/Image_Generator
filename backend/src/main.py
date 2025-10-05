@@ -1,23 +1,14 @@
-"""
-app.py — main FastAPI entry point
-Run with:
-    uvicorn app:app --reload
-"""
+# src/main.py
 
 from fastapi import FastAPI
-from routes import router  # import routes.py
+from api.routes import router
 
-# Initialize app
 app = FastAPI(
-    title="Prompt + Image Guided Diffusion API",
-    version="1.0",
-    description="Stable Diffusion v1.5 + ControlNet (Canny) backend"
+    title="ControlNet Canny Image Generator",
+    description="Generates images via Stable Diffusion conditioned on Canny edges."
 )
-
-# Root route
-@app.get("/")
-def root():
-    return {"message": "Welcome to the Prompt + Image Guided Diffusion API"}
-
-# Include all routes from routes.py
 app.include_router(router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
