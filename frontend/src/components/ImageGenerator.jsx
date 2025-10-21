@@ -93,17 +93,12 @@ export default function ImageGenerator() {
                 setGeneratedImage(null);
                 setLoading(false);
             }, 500);
+        } else {
+            // ✅ Fallback if overlayRef isn't set
+            setShowResult(false);
+            setGeneratedImage(null);
+            setLoading(false);
         }
-    };
-
-    const handleDownload = () => {
-        if (!generatedImage) return;
-        const link = document.createElement("a");
-        link.href = generatedImage;
-        link.download = `generated-image-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     };
 
     return (
@@ -142,7 +137,7 @@ export default function ImageGenerator() {
                     numInferenceSteps={numInferenceSteps}
                     guidanceScale={guidanceScale}
                     prompt={prompt}
-                    handleDownload={() => {
+                    onDownload={() => {
                         const link = document.createElement("a");
                         link.href = generatedImage;
                         link.download = `generated-image-${Date.now()}.png`;
@@ -150,7 +145,7 @@ export default function ImageGenerator() {
                         link.click();
                         document.body.removeChild(link);
                     }}
-                    handleGenerateAgain={handleGenerateAgain}
+                    onGenerateAgain={handleGenerateAgain}
                     ref={resultRef}
                 />
             )}
