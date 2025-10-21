@@ -16,7 +16,6 @@ export default function ImageGenerator() {
 
     const formRef = useRef(null);
     const resultRef = useRef(null);
-
     const fileInputRef = useRef(null);
     const overlayRef = useRef(null);
 
@@ -49,7 +48,6 @@ export default function ImageGenerator() {
             setError("Please enter a prompt");
             return;
         }
-        console.log("Okay")
 
         setLoading(true);
         setError(null);
@@ -63,7 +61,7 @@ export default function ImageGenerator() {
         try {
             const response = await fetch("/api/generate", {
                 method: "POST",
-                body: formData
+                body: formData,
             });
 
             if (!response.ok) {
@@ -72,13 +70,29 @@ export default function ImageGenerator() {
             }
 
             const blob = await response.blob();
-            setGeneratedImage(URL.createObjectURL(blob));
+            const imageUrl = URL.createObjectURL(blob);
+            setGeneratedImage(imageUrl);
             setLoading(false);
+
+            // ✅ Save result to localStorage
+            const newResult = {
+                id: Date.now(),
+                imageUrl,
+                prompt,
+                numInferenceSteps,
+                guidanceScale,
+                timestamp: new Date().toISOString(),
+            };
+
+            const existingResults = JSON.parse(localStorage.getItem("results")) || [];
+            existingResults.unshift(newResult); // Add newest first
+            localStorage.setItem("results", JSON.stringify(existingResults));
 
             // Show overlay with result
             setTimeout(() => {
                 setShowResult(true);
             }, 100);
+
         } catch (err) {
             setError(err.message || "Failed to generate image. Please try again.");
             setLoading(false);
@@ -94,7 +108,6 @@ export default function ImageGenerator() {
                 setLoading(false);
             }, 500);
         } else {
-            // ✅ Fallback if overlayRef isn't set
             setShowResult(false);
             setGeneratedImage(null);
             setLoading(false);
@@ -150,7 +163,5 @@ export default function ImageGenerator() {
                 />
             )}
         </div>
-
-
     );
 }
