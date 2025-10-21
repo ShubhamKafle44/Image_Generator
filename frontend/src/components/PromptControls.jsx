@@ -29,7 +29,7 @@ export default function PromptControls({
                 <input
                     type="range"
                     min="10"
-                    max="50"
+                    max="500"
                     value={numInferenceSteps}
                     onChange={(e) => setNumInferenceSteps(Number(e.target.value))}
                     className="w-full h-2 bg-white/20 rounded-lg accent-purple-500 cursor-pointer"
