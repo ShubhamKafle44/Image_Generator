@@ -1,21 +1,25 @@
-# Core ML + Diffusion
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
-diffusers>=0.24.0
-transformers>=4.35.0
-accelerate>=0.24.0
-safetensors>=0.3.2
+# Core ML Libraries (compatible versions)
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
 
-# ControlNet and Image Processing
-opencv-contrib-python>=4.8.0.76
-Pillow>=10.0.0
-numpy>=1.24.0
+# Hugging Face
+transformers==4.46.3
+diffusers==0.32.1
+accelerate==1.1.1
 
-# Backend / API
-fastapi>=0.105.0
-uvicorn>=0.25.0
-python-multipart>=0.0.7
+# FastAPI and Server
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20
 
-# Performance (optional)
-xformers>=0.0.22
+# Image Processing
+Pillow==11.0.0
+opencv-python==4.10.0.84
+numpy==1.26.4
+
+# Utilities
+pydantic==2.10.3
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+safetensors==0.4.5
