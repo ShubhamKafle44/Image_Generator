@@ -1,23 +1,51 @@
-import "./App.css";
-import React, { useState } from "react";
-import Navbar from "./components/Navbar";
-import ImageGenerator from "./components/ImageGenerator";
-import Results from "./components/Results";
+// App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import Home from './components/Home.jsx';
+import Dashboard from './components/Dashboard.jsx';
+import ImageGenerator from './components/ImageGenerator.jsx';
 
-export default function App() {
-  const [activePage, setActivePage] = useState("home");
-  const pages = ["home", "results"]; // can add more pages later
-
+function App() {
   return (
-    <div className="min-h-screen min-w-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Fixed Navbar */}
-      <Navbar pages={pages} activePage={activePage} setActivePage={setActivePage} />
+    <Router>
+      <Routes>
+        {/* Public Home Page */}
+        <Route path="/" element={<Home />} />
 
-      {/* Page Content */}
-      <main className="flex-1 pt-20 px-4 sm:px-6 pb-10">
-        {activePage === "home" && <ImageGenerator />}
-        {activePage === "results" && <Results setActivePage={setActivePage} />}
-      </main>
-    </div>
+        {/* Protected Dashboard */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Image Generator */}
+        <Route
+          path="/image-generator"
+          element={
+            <ProtectedRoute>
+              <ImageGenerator />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
+
+// Helper component to protect routes
+const ProtectedRoute = ({ children }) => {
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
+};
+
+export default App;
