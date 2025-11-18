@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function Results({ setActivePage }) {
+export function Results({ setActivePage }) {
     const [results, setResults] = useState([]);
 
     useEffect(() => {
@@ -21,7 +21,7 @@ export default function Results({ setActivePage }) {
                 <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center max-w-md w-full">
                     <p className="text-xl sm:text-2xl font-medium mb-4">No past results found.</p>
                     <button
-                        onClick={() => setActivePage("home")}
+                        onClick={() => setActivePage("generate")}
                         className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition"
                     >
                         Go Back
@@ -31,15 +31,13 @@ export default function Results({ setActivePage }) {
         );
     }
 
-
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 text-white">
-            <div className="flex justify-between items-center mb-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 sm:p-8 text-white">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
                 <h1 className="text-3xl font-bold">Past Results</h1>
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
                     <button
-                        onClick={() => setActivePage("home")}
+                        onClick={() => setActivePage("generate")}
                         className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition"
                     >
                         Generate New
@@ -57,24 +55,25 @@ export default function Results({ setActivePage }) {
                 {results.map((res) => (
                     <div
                         key={res.id}
-                        className="bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+                        className="bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col"
                     >
                         <img
                             src={res.imageUrl}
                             alt={res.prompt}
                             className="w-full h-64 object-cover"
                         />
-                        <div className="p-4">
-                            <p className="text-sm text-gray-300 mb-2 line-clamp-2">
-                                <strong>Prompt:</strong> {res.prompt}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                                Steps: {res.numInferenceSteps} | Guidance: {res.guidanceScale}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-2">
-                                {new Date(res.timestamp).toLocaleString()}
-                            </p>
-
+                        <div className="p-4 flex flex-col flex-1 justify-between">
+                            <div>
+                                <p className="text-sm text-gray-300 mb-2 line-clamp-2">
+                                    <strong>Prompt:</strong> {res.prompt}
+                                </p>
+                                <p className="text-xs text-gray-400">
+                                    Steps: {res.numInferenceSteps} | Guidance: {res.guidanceScale}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-2">
+                                    {new Date(res.timestamp).toLocaleString()}
+                                </p>
+                            </div>
                             <button
                                 onClick={() => {
                                     const link = document.createElement("a");

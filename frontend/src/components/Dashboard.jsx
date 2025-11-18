@@ -1,18 +1,28 @@
-import { useUser, UserButton } from "@clerk/clerk-react";
+import { useState } from "react";
+import Navbar from "./Navbar";
 import ImageGenerator from "./ImageGenerator";
+import Results from "./Results";
 
 export default function Dashboard() {
-    const { user } = useUser();
+    const pages = ["generate", "results"];
+    const [activePage, setActivePage] = useState("generate");
 
     return (
-        <div className="text-white">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Dashboard</h1>
-                <UserButton />
-            </div>
+        <div className="min-h-screen text-white">
+            {/* Navbar */}
+            <Navbar pages={pages} activePage={activePage} setActivePage={setActivePage} />
 
-            <p>Welcome, {user?.firstName || "User"}!</p>
-            <ImageGenerator />
+            <main>
+                {/* Image Generator Section */}
+                {activePage === "generate" && (
+                    <ImageGenerator />
+                )}
+
+                {/* Results Section */}
+                {activePage === "results" && (
+                    <Results setActivePage={setActivePage} />
+                )}
+            </main>
         </div>
     );
 }
