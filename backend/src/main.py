@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from src.database import engine, Base
+from src.routers import generate, results
 import sys
 import os
 
@@ -8,15 +10,19 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 from fastapi import FastAPI
-from api.routes import router  # use full import path
+from src.routers import generate, results
 
 app = FastAPI(
     title="ControlNet Canny Image Generator",
     description="Generates images via Stable Diffusion conditioned on Canny edges."
 )
 
-# Register routes
-app.include_router(router)
+app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
+
+app.include_router(generate.router, prefix="/api")
+app.include_router(results.router, prefix="/api")
 
 @app.get("/")
 def read_root():
