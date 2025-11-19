@@ -1,19 +1,54 @@
 import React, { useEffect, useState } from "react";
+import { useUser } from "@clerk/clerk-react";
 
-export function Results({ setActivePage }) {
+export default function Results({ setActivePage }) {
     const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useUser();
 
     useEffect(() => {
-        const storedResults = JSON.parse(localStorage.getItem("results")) || [];
-        setResults(storedResults);
-    }, []);
+        if (!user) return;
 
-    const handleClear = () => {
-        if (window.confirm("Are you sure you want to clear all past results?")) {
-            localStorage.removeItem("results");
+        const fetchResults = async () => {
+            try {
+                const response = await fetch(`/api/user/results?user_id=${encodeURIComponent(user.id)}`);
+                if (!response.ok) throw new Error("Failed to fetch results");
+
+                const data = await response.json();
+                setResults(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Failed to fetch user results:", error);
+                setResults([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [user]);
+
+    const handleClear = async () => {
+        if (!window.confirm("Are you sure you want to clear all past results?")) return;
+
+        try {
+            const response = await fetch(`/api/user/results?user_id=${user.id}`, {
+                method: "DELETE",
+            });
+            await response.json();
             setResults([]);
+        } catch (error) {
+            console.error("Failed to clear results:", error);
+            alert("Failed to clear results. Try again later.");
         }
     };
+
+    if (loading) {
+        return (
+            <div className="w-full flex items-center justify-center min-h-screen text-white">
+                <p>Loading past results...</p>
+            </div>
+        );
+    }
 
     if (results.length === 0) {
         return (
@@ -57,36 +92,71 @@ export function Results({ setActivePage }) {
                         key={res.id}
                         className="bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col"
                     >
-                        <img
-                            src={res.imageUrl}
-                            alt={res.prompt}
-                            className="w-full h-64 object-cover"
-                        />
+                        {/* Original + Generated images side by side */}
+                        <div className="grid grid-cols-2 gap-2 p-2 bg-slate-900">
+                            <div>
+                                <p className="text-xs text-gray-400 mb-1 text-center">Original</p>
+                                <img
+                                    src={res.original_image_url}
+                                    alt="Original"
+                                    className="w-full h-40 object-cover rounded-lg"
+                                />
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-gray-400 mb-1 text-center">Generated</p>
+                                <img
+                                    src={res.generated_image_url}
+                                    alt="Generated"
+                                    className="w-full h-40 object-cover rounded-lg"
+                                />
+                            </div>
+                        </div>
+
                         <div className="p-4 flex flex-col flex-1 justify-between">
                             <div>
                                 <p className="text-sm text-gray-300 mb-2 line-clamp-2">
                                     <strong>Prompt:</strong> {res.prompt}
                                 </p>
+
                                 <p className="text-xs text-gray-400">
-                                    Steps: {res.numInferenceSteps} | Guidance: {res.guidanceScale}
+                                    Steps: {res.num_inference_steps} | Guidance: {res.guidance_scale}
                                 </p>
+
                                 <p className="text-xs text-gray-500 mt-2">
                                     {new Date(res.timestamp).toLocaleString()}
                                 </p>
                             </div>
-                            <button
-                                onClick={() => {
-                                    const link = document.createElement("a");
-                                    link.href = res.imageUrl;
-                                    link.download = `result-${res.id}.png`;
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                }}
-                                className="mt-3 w-full bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-lg text-sm transition"
-                            >
-                                Download
-                            </button>
+
+                            <div className="flex gap-2 mt-3">
+                                <button
+                                    onClick={() => {
+                                        const link = document.createElement("a");
+                                        link.href = res.original_image_url;
+                                        link.download = `original-${res.id}.png`;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }}
+                                    className="flex-1 bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg text-sm transition"
+                                >
+                                    Download Original
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        const link = document.createElement("a");
+                                        link.href = res.generated_image_url;
+                                        link.download = `generated-${res.id}.png`;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }}
+                                    className="flex-1 bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-lg text-sm transition"
+                                >
+                                    Download Generated
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

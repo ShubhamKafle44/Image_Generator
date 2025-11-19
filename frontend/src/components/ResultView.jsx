@@ -1,6 +1,6 @@
 import React from "react";
 
-export function ResultView({ generatedImage, onDownload, onGenerateAgain, numInferenceSteps, guidanceScale, prompt }) {
+export default function ResultView({ generatedImage, onDownload, onGenerateAgain, numInferenceSteps, guidanceScale, prompt }) {
     return (
         <div className="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 flex flex-col gap-6 sm:gap-8">
             <div className="text-center">

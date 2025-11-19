@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import ImageUpload from "./ImageUpload";
 import PromptControls from "./PromptControls";
 import ResultView from "./ResultView";
-
+import { useUser } from "@clerk/clerk-react";
 export default function ImageGenerator() {
+    const { user } = useUser();
     const [uploadedImage, setUploadedImage] = useState(null);
     const [uploadedImagePreview, setUploadedImagePreview] = useState(null);
     const [prompt, setPrompt] = useState("");
@@ -38,8 +39,11 @@ export default function ImageGenerator() {
             setError(null);
         }
     };
-
     const handleGenerate = async () => {
+        if (!user) {
+            setError("Please log in first.");
+            return;
+        }
         if (!uploadedImage) {
             setError("Please upload an image first");
             return;
@@ -61,6 +65,9 @@ export default function ImageGenerator() {
         try {
             const response = await fetch("/api/generate", {
                 method: "POST",
+                headers: {
+                    "user-id": user.id,
+                },
                 body: formData,
             });
 
@@ -74,30 +81,16 @@ export default function ImageGenerator() {
             setGeneratedImage(imageUrl);
             setLoading(false);
 
-            // ✅ Save result to localStorage
-            const newResult = {
-                id: Date.now(),
-                imageUrl,
-                prompt,
-                numInferenceSteps,
-                guidanceScale,
-                timestamp: new Date().toISOString(),
-            };
-
-            const existingResults = JSON.parse(localStorage.getItem("results")) || [];
-            existingResults.unshift(newResult); // Add newest first
-            localStorage.setItem("results", JSON.stringify(existingResults));
-
-            // Show overlay with result
+            // Optional: Save result to localStorage or state as needed
             setTimeout(() => {
                 setShowResult(true);
             }, 100);
-
         } catch (err) {
             setError(err.message || "Failed to generate image. Please try again.");
             setLoading(false);
         }
     };
+
 
     const handleGenerateAgain = () => {
         if (overlayRef.current) {

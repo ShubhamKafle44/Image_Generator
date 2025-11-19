@@ -1,9 +1,7 @@
-// App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import Home from './components/Home.jsx';
 import Dashboard from './components/Dashboard.jsx';
-import ImageGenerator from './components/ImageGenerator.jsx';
 
 function App() {
   return (
@@ -18,16 +16,6 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Protected Image Generator */}
-        <Route
-          path="/image-generator"
-          element={
-            <ProtectedRoute>
-              <ImageGenerator />
             </ProtectedRoute>
           }
         />
